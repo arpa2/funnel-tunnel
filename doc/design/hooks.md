@@ -43,6 +43,14 @@ unbounded plethora of tunnelling and other tricks within an application.
 Additional options that may also exist to override header files, replace symbols
 in linker prescriptions, and many other naughty tricks.
 
+When dæmon code like SOCKS5 already exists, it may be possible to construct
+a library whose initialisation code sets up such a dæmon over a UNIX domain
+socket, and overrules á la SOCKS5 to forward the socket API to this
+UNIX domain socket.  The dæmon may or may not run in a separate process;
+but in any case it will run with the same privileges as the library that
+started it, and so with the same privileges as the user starting the program.
+
+
 Convincing Applications to be Confined by the Tunnel Tunnel
 -----------------------------------------------------------
 
@@ -94,6 +102,24 @@ the `LD_PRELOAD` variable for a specific binary.
 
 This option either requires support from the administrator, the distribution
 or to make a local copy of an executable.
+
+It does seem to be possible within the [ELF](https://www.mankier.com/5/elf)
+format to do these things; the `.dynamic` section holds `DT_NEEDED` entries
+with libraries that are required.  A new entry might be prefixed before the
+actual implementation of the socket API.  Note that this may be needed for
+included libraries as well, if they are already linked to a library that
+implements the socket API (such as glibc).  Such libraries can be detected
+by looking for the symbols, so ample warnings might be given.  The Nix
+approach of setting up a `LD_LIBRARY_PATH` through the `DT_RUNPATH`
+setting in the same `.dynamic` section could be used to divert to the right
+underlying libraries.
+
+All this may turn out to be really simple with Nix.  Unfortunately, it would
+not be wise to constrain ourselves to that platform, but instead we should
+find a binding method that works everywhere -- even if it is inspired by Nix.
+
+This binding cannot currently be made with `patchelf`, but it does seem to
+be right up to its game, and so an extension of the program may be prudent.
 
 
 Server Applications
