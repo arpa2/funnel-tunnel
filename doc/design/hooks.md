@@ -43,6 +43,14 @@ unbounded plethora of tunnelling and other tricks within an application.
 Additional options that may also exist to override header files, replace symbols
 in linker prescriptions, and many other naughty tricks.
 
+Convincing Applications to be Confined by the Tunnel Tunnel
+-----------------------------------------------------------
+
+### Globally set Preload Environment Variable
+
+The `LD_PRELOAD` variable can be set to always load `libfunnel.so`, which may
+then find configuration files for the program being run under a user's setup.
+
 ### Setup of GUI applications
 
 Note that OpenDesktop defines how [application menu
@@ -53,7 +61,7 @@ are to be stored.  It should be possible to change, say,
 
 into
 
-`Exec=funtun profile=6bed4 twinkle`
+`Exec=funnel --profile=6bed4 -- twinkle`
 
 to apply a profile named `6bed4` and thereby extend the `twinkle` application
 with the ability to run over IPv6 anywhere — without requirement of Twinkle to
@@ -62,6 +70,31 @@ support it in any way.
 This sort of settings could be setup with a manual GUI component that edits
 these files, or with a central provisioning mechanism such as
 [SteamWorks](http://steamworks.arpa2.net).
+
+This requires either write access to the menu files (by administrator or
+distribution) or a local meny option copy must be made into user controllable
+space.
+
+### Shell Wrapper Programs
+
+This is a straightforward option; shell programs may be written to add local
+modifications to one's commands.  A properly set `PATH` variable could prefer
+per-user local variations over the widely installed ones.
+
+This may not impact GUI menu entries when these have absolute paths.
+
+### Patching ELF Files?
+
+This is a bit of a stretch.
+
+Just like the [patchelf](https://www.mankier.com/1/patchelf) utility can setup
+a dedicated `LD_LIBRARY_PATH` for an ELF executable (which is used heavily in
+Nix), there *may* be a way to use it, or an improved version of it, to set
+the `LD_PRELOAD` variable for a specific binary.
+
+This option either requires support from the administrator, the distribution
+or to make a local copy of an executable.
+
 
 Server Applications
 -------------------
